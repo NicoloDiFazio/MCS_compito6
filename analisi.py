@@ -41,7 +41,6 @@ for i in range (0, n+1):
     
 gr = ROOT.TGraphErrors(len(V_T), V_T, I, eV_T, eI)
 
-
 f = ROOT.TF1("f", "[0]*(exp([1]*x)-1)", min, max)
 
 f.SetParameter(0, 1e-09)
