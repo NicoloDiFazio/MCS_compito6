@@ -26,106 +26,77 @@ file3 = open('outFreddo2.dat','r')
 file4 = open('outCaldo.dat','r')
 file5 = open('outCaldo2.dat','r')
 
-files = [file1, file2, file3, file4, file5]
+files = [file2, file3, file4, file5]
+colors = [4, 4, 2, 2]
+GR = []
+
+k = 0
+gr = ROOT.TGraphErrors()
+
 #file Temperatura ambiente
 for line in file1:
     str = line.split()
     if len(str)>0:
-        V = np.append(V,float(str[0]))
-        eV = np.append(eV, 2e-3)
-        R = np.append(R, 0)
-        eR = np.append(eR, 0)
-        T = np.append(T,float(str[1])+273.15)
-        eT = np.append(eT,0.24089950000000002/abs(A*R0))
-        I = np.append(I,float(str[2]))
-        eI = np.append(eI,float(str[3]))
+        V = float(str[0])
+        eV = 2e-3
+        R = 0
+        eR = 0
+        T = float(str[1]) + 273.15
+        eT = 0.24089950000000002/abs(A*R0)
+        I = float(str[2])
+        eI = float(str[3])
+        x = V/T
+        ex = x*np.sqrt((eT/T)**2 + (eV/V)**2)
 
-for i in range (0, n+1):
-    V_T  = np.append(V_T, V[i]/T[i])
-    eV_T = np.append(eV_T, V_T[i]*m.sqrt((eV[i]/V[i])**2+(eT[i]/T[i])**2))
-    #eV_T = np.append(eV_T, V_T[i]*eT[i]/T[i])
+        gr.SetPoint(k, x, I)
+        gr.SetPointError(k, ex, eI)
 
-#file Temperatura fredda 1
+        k+=1
+GR.append(gr)
+
+#file temperature diverse
+
+i = 0
 for file in files:
-    for line in file2:
+    k = 0
+    gr = ROOT.TGraphErrors()    
+    for line in file:
         str = line.split()
         if len(str)>0:
-            V = np.append(V,float(str[0]))
-            eV = np.append(eV, 2e-3)
-            R = np.append(R,float(str[1]))
-            eR = np.append(eR,float(str[2]))
-            T = np.append(T,(float(str[1])/R0 - 1)/A + 273.15)
-            eT = np.append(eT,float(str[2])/abs(A*R0))
-            I = np.append(I,float(str[3]))
-            eI = np.append(eI,float(str[4]))
+            V = float(str[0])
+            eV = 2e-3
+            R = float(str[1])
+            eR = float(str[2])
+            T = (R/R0 - 1)/A + 273.15
+            eT = eR/abs(A*R0)
+            I = float(str[3])
+            eI = float(str[4])
+            x = V/T
+            ex = x*np.sqrt((eT/T)**2 + (eV/V)**2)
             
-    for i in range (0, n+1):
-        V_T  = np.append(V_T, V[i]/T[i])
-        eV_T = np.append(eV_T, V_T[i]*m.sqrt((eV[i]/V[i])**2+(eT[i]/T[i])**2))
+            gr.SetPoint(k, x, I)
+            gr.SetPointError(k, ex, eI)
 
-V_Tamb = []
-Iamb = []
-eV_Tamb = []
-eIamb = []
+            k+=1
+    gr.SetMarkerStyle(20)
+    gr.SetMarkerSize(0.5)
+    gr.SetMarkerColor(colors[i])
+    GR.append(gr)
+    i+=1
 
-V_Tf1 = []
-If1 = []
-eV_Tf1 = []
-eIf1 = []
+GR[0].Draw("AP")
+for j in range (1, len(GR)):
+    GR[j].Draw("P")
 
-V_Tf2 = []
-If2 = []
-eV_Tf2 = []
-eIf2 = []
+f = ROOT.TF1("f", "[0]*(exp([1]*x)-1)", 0, 0.1)
+f.SetParameter(0, 1e-15)
+f.SetParameter(1, 1.16e4)
 
-V_Tc1 = []
-Ic1 = []
-eV_Tc1 = []
-eIc1 = []
+temperatura = ['Ambiente', 'Fredda 1', 'Fredda 2', 'Calda 1', 'Calda 2']
 
-V_Tc2 = []
-Ic2 = []
-eV_Tc2 = []
-eIc2 = []
+for j in range (len(GR)):
+    GR[j].Fit("f")
+    print("e/k misurata a temperatura", temperatura[j], ": %f +- %f" %(f.GetParameter(1), f.GetParError(1)))
+    print("e/k real: ", 1.6e-19/1.38e-23)
 
-for i in range(0, n+1):
-    V_Tamb.append(V_T[i])
-    Iamb.append(I[i])
-    eV_Tamb.append(eV_T[i])
-    eIamb.append(eI[i])
-    
-for i in range(n+1, 2*n+1):
-    V_Tf1.append(V_T[i])
-    If1.append(I[i])
-    eV_Tf1.append(eV_T[i])
-    eIf1.append(eI[i])
-
-for i in range(2*n+1, 3*n+1):
-    V_Tf2.append(V_T[i])
-    If2.append(I[i])
-    eV_Tf2.append(eV_T[i])
-    eIf2.append(eI[i])
-    
-for i in range(3*n+1, 4*n+1):
-    V_Tc1.append(V_T[i])
-    Ic1.append(I[i])
-    eV_Tc1.append(eV_T[i])
-    eIc1.append(eI[i])
-    
-for i in range(4*n+1, 5*n+1):
-    V_Tc2.append(V_T[i])
-    Ic2.append(I[i])
-    eV_Tc2.append(eV_T[i])
-    eIc2.append(eI[i])
-    
-gramb = ROOT.TGraphErrors(len(V_Tamb), V_Tamb, Iamb, eV_Tamb, eIamb)
-famb = ROOT.TF1("f", "[0]*(exp([1]*x)-1)", V_Tamb[0], V_Tamb[len(V_Tamb)])
-famb.SetParameter(0, 1e-09)
-famb.SetParameter(1, 1.16e4)
-
-gramb.Draw("AP")
-gramb.Fit("f")
-print("e/k misurata: %f +- %f" %(famb.GetParameter(1), famb.GetParError(1)))
-print("e/k real: ", 1.6e-19/1.38e-23)
-famb.Draw("SAME")
 ROOT.gApplication.Run(True)
