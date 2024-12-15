@@ -9,6 +9,17 @@ n = 20
 R0 = 100  #resist a 0 C
 A = 3.9e-3 #costante
 
+V  = np.array([])
+eV = np.array([])
+R  = np.array([])
+eR = np.array([])
+I  = np.array([])
+eI = np.array([])
+T  = np.array([])
+eT = np.array([])
+V_T  = np.array([])
+eV_T  = np.array([])
+
 file1 = open('outBuonoSiTemp.dat','r')
 file2 = open('outFreddo.dat','r')
 file3 = open('outFreddo2.dat','r')
