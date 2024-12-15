@@ -20,19 +20,13 @@ eT = np.array([])
 V_T  = np.array([])
 eV_T  = np.array([])
 
-file1 = open('outBuonoSiTemp.dat','r')
-file2 = open('outFreddo.dat','r')
-file3 = open('outFreddo2.dat','r')
-file4 = open('outCaldo.dat','r')
-file5 = open('outCaldo2.dat','r')
-
-files = [file1, file2, file3, file4, file5]
+file = open('out.dat','r')
 
 for line in file:
     str = line.split()
     if len(str)>0:
         V = np.append(V,float(str[0]))
-        eV = np.append(eV, 0)
+        eV = np.append(eV, 0.002)
         R = np.append(R,float(str[1]))
         eR = np.append(eR,float(str[2]))
         I = np.append(I,float(str[3]))
@@ -43,7 +37,7 @@ for line in file:
 
 for i in range (0, n+1):
     V_T  = np.append(V_T, V[i]/T[i])
-    eV_T = np.append(eV_T, V_T[i]*eT[i]/T[i])
+    eV_T = np.append(eV_T, V_T[i]*np.sqrt((eT[i]/T[i])**2+(eV[i]/V[i])**2))
     
 gr = ROOT.TGraphErrors(len(V_T), V_T, I, eV_T, eI)
 
