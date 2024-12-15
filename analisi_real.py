@@ -18,6 +18,8 @@ file5 = open('outCaldo2.dat','r')
 files = [file2, file3, file4, file5]
 colors = [4, 4, 2, 2]
 GR = []
+Tamb = np.array([])
+eTamb = 0.24089950000000002/abs(A*R0)
 
 k = 0
 gr = ROOT.TGraphErrors()
@@ -31,7 +33,7 @@ for line in file1:
         R = 0
         eR = 0
         T = float(str[1]) + 273.15
-        eT = 0.24089950000000002/abs(A*R0)
+        eT = eTamb
         I = float(str[2])
         eI = float(str[3])
         x = V/T
@@ -40,6 +42,7 @@ for line in file1:
         gr.SetPoint(k, x, I)
         gr.SetPointError(k, ex, eI)
 
+        Tamb = np.append(Tamb, T)
         k+=1
 GR.append(gr)
 
@@ -87,5 +90,6 @@ for j in range (len(GR)):
     GR[j].Fit("f")
     print("e/k misurata a temperatura", temperatura[j], ": %f +- %f" %(f.GetParameter(1), f.GetParError(1)))
     print("e/k real: ", 1.6e-19/1.38e-23)
-
+print("Temperatura ambiente misurata: %f +- %f" %(Tamb.mean(), eTamb), "K")
+print("Temperatura ambiente misurata: %f +- %f" %(Tamb.mean()-273.15, eTamb), "C")
 ROOT.gApplication.Run(True)
