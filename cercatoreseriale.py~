@@ -1,7 +1,0 @@
-#!/usr/bin/python
-import sys, serial
-from dmm import*
-ser= serial.Serial("COM4", 9600)
-val, err=dmmread(ser)
-
-
