@@ -43,6 +43,6 @@ for i in range (len(par)):
     print(pars[i],":", par[i])
     print(pars[i],"fit:", f.GetParameter(i))
 
-print("e = %f" %(f.GetParameter(1)))
+print("e = %f +- %f" %(f.GetParameter(1), f.GetParError(1)))
 R.gApplication.Run(True)
 
