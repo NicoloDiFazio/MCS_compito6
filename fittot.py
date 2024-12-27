@@ -9,12 +9,28 @@ import scipy.constants as c
 ce = c.e
 ch = c.h
 ck = c.k
-
+'''
 def fcn(par):
     chi2e   = ((mis[0] - par[0])/err[0])**2
     chi2e_h = ((mis[1] - par[0]/par[1])/err[1])**2
     chi2h_k = ((mis[2] - par[1]/par[2])/err[2])**2
     chi2e_k = ((mis[3] - par[0]/par[2])/err[3])**2
+    chi2    = (chi2e + chi2e_h + chi2h_k + chi2e_k)
+    return chi2
+'''
+def fcn(par):
+    chi2e   = 0
+    chi2e_h = 0
+    chi2h_k = 0
+    chi2e_k = 0
+    chi2    = 0
+    chi2e   = ((E - par[0])/sE)**2
+    for i in range(0, len(E_H)):
+        chi2e_h = ((E_H[i] - par[0]/par[1])/sE_H[i])**2
+    for i in range(0, len(H_K)):
+        chi2h_k = ((H_K[i] - par[1]/par[2])/sH_K[i])**2
+    for i in range(0, len(E_K)):
+        chi2e_k = ((E_K[i] - par[0]/par[2])/sE_K[i])**2
     chi2    = (chi2e + chi2e_h + chi2h_k + chi2e_k)
     return chi2
 
